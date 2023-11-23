@@ -1,6 +1,6 @@
 # prj_Babylon
 
-> **A 3D Web Viewer build with Babylon.js**
+> **A 3D Web Viewer built with Babylon.js**
 
 
 ## Types
