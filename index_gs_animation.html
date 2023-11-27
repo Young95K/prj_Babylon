@@ -60,11 +60,8 @@
         var engine = null;
         var scene = null;
         var sceneToRender = null;
-        var createDefaultEngine = function() { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true,  disableWebGL2Support: false}); };
-        /*
-Using .splat file conversion and code from https://github.com/dylanebert/gsplat.js
-Halo diorama captured by https://github.com/PirateJC
-*/
+        ;
+        
 var vertexCount;
 var positions;
 var u_buffer;
@@ -256,7 +253,7 @@ function setData(binaryData)
     }
 }
 
-var createScene = function () {
+var createScene = async function () {
     var scene = new BABYLON.Scene(engine);
     scene.clearColor = new BABYLON.Color4(0,0,0,0);
     document.getElementById("renderCanvas").style.backgroundColor  = "black";
@@ -265,7 +262,56 @@ var createScene = function () {
     camera.attachControl(canvas, true);
     camera.wheelPrecision = 100; 
 
-    BABYLON.Tools.LoadFileAsync("https://raw.githubusercontent.com/CedricGuillemet/dump/master/Halo_Believe.splat", true).then((data)=>{
+    // define animation to be put into the camera from the json file
+    let animations = await BABYLON.Animation.ParseFromFileAsync(null, "https://huggingface.co/datasets/Young95K/IV/resolve/main/IV_Camera_Animation.json");
+    
+    console.log("Here is the frame per second:");
+    console.log(animations);
+    console.log(animations[0].framePerSecond, camera.fov);
+    // define the FOV of the camera
+    const fov_animations = new BABYLON.Animation("fov_of_cam", "camera.fov",
+    60, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+    
+    const keyFrames = []; 
+    keyFrames.push({
+        frame: 0,
+        value: 1.0
+    });
+    keyFrames.push({
+        frame: 120,
+        value: 0.8
+    });
+    keyFrames.push({
+        frame: 240,
+        value: 0.6
+    });
+    keyFrames.push({
+        frame: 360,
+        value: 0.4
+    });
+    
+    keyFrames.push({
+        frame: 480,
+        value: 0.2
+    });
+    fov_animations.setKeys(keyFrames);
+    // console.log(fov_animations);
+
+    // camera.animations = animations;
+    // camera.animations = fov_animations;
+    // console.log(camera.animations);
+    camera.animations.push(fov_animations);
+
+    scene.beginAnimation(camera, 0, 480, true);
+
+    splat_url = ["https://raw.githubusercontent.com/CedricGuillemet/dump/master/Halo_Believe.splat",
+    "https://huggingface.co/datasets/Young95K/IV/resolve/main/buzz.splat",
+    "https://huggingface.co/datasets/Young95K/IV/resolve/main/poly_woman.splat",
+    "https://huggingface.co/datasets/Young95K/IV/resolve/main/recon_street.splat",
+    "https://huggingface.co/datasets/Young95K/IV/resolve/main/room_B.splat"
+    ];
+
+    BABYLON.Tools.LoadFileAsync(splat_url[0], true).then((data)=>{
         setData(new Uint8Array(data));
 
         BABYLON.Effect.ShadersStore["customVertexShader"] = vertexShaderSource;
@@ -373,7 +419,33 @@ var createScene = function () {
         if (!engine) throw 'engine should not be null.';
         startRenderLoop(engine, canvas);
         window.scene = createScene();};
-        initFunction().then(() => {sceneToRender = scene                    
+        initFunction().then(() => {scene.then(returnedScene => { sceneToRender = returnedScene; });
+                            
+        });
+
+        // Resize
+        window.addEventListener("resize", function () {
+            engine.resize();
+        });
+                window.initFunction = async function() {
+                    
+                    
+                    
+                    var asyncEngineCreation = async function() {
+                        try {
+                        return createEngine();
+                        } catch(e) {
+                        console.log("the available createEngine function failed. Creating the default engine instead");
+                        return createDefaultEngine();
+                        }
+                    }
+
+                    window.engine = await asyncEngineCreation();
+        if (!engine) throw 'engine should not be null.';
+        startRenderLoop(engine, canvas);
+        window.scene = createScene();};
+        initFunction().then(() => {scene.then(returnedScene => { sceneToRender = returnedScene; });
+                            
         });
 
         // Resize
