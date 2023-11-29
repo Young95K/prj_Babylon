@@ -45,10 +45,10 @@ with open(currPath, 'w', encoding="utf-8") as make_file:
                     co_array = []
                     co = copy.deepcopy(spline.bezier_points[x].co)
                     co *= 10
-                    print("%.3f " % (co.y)) 
-                    print("%.3f " % (-co.x)) 
-                    print("%.3f " % (co.z))
-                    co_array += [-co.x, co.z, co.y]
+                    print("%.3f " % (co.x)) 
+                    print("%.3f " % (co.z)) 
+                    print("%.3f " % (co.y))
+                    co_array += [co.x, co.z, co.y]
                     co_array += [[0, 0, 0]]
                     
                     inside_keys["values"] = co_array
@@ -63,10 +63,10 @@ with open(currPath, 'w', encoding="utf-8") as make_file:
                 co_array = []
                 co = copy.deepcopy(spline.bezier_points[0].co)
                 co *= 10
-                print("%.3f " % (co.y)) 
-                print("%.3f " % (-co.x)) 
-                print("%.3f " % (co.z))
-                co_array += [-co.x, co.z, co.y]
+                print("%.3f " % (co.x)) 
+                print("%.3f " % (co.z)) 
+                print("%.3f " % (co.y))
+                co_array += [co.x, co.z, co.y]
                 co_array += [[0, 0, 0]]
                 
                 inside_keys["values"] = co_array
