@@ -5,6 +5,38 @@ from collections import OrderedDict
 import copy
 
 print('\n'*10)
+
+# Set the name of your camera
+camera_name = "Camera"
+
+# Set the frame range you're interested in
+start_frame = 1
+end_frame = bpy.context.scene.frame_end
+
+# Create a list to store frame and focal length pairs
+frame_focal_length_pairs = []
+
+# Iterate through the frames and extract the focal length
+for frame in range(start_frame, end_frame + 1):
+    bpy.context.scene.frame_set(frame)
+    camera = bpy.data.objects.get(camera_name)
+
+    if camera is not None and camera.type == 'CAMERA':
+        focal_length = camera.data.lens
+        frame_focal_length_pairs.append((frame, focal_length))
+
+# Print the results
+for frame, focal_length in frame_focal_length_pairs:
+   
+    
+    print(f"Frame {frame}: Focal Length = {focal_length}")
+
+
+
+
+
+
+'''
 curve_name = 'BezierCircle.002'
 frames = 480
 scale_size = 10
@@ -65,6 +97,8 @@ with open(currPath, 'w', encoding="utf-8") as make_file:
     ordered_dict = OrderedDict()
     ordered_dict['keys'] = keys_
     
+    
+    
     json.dump(ordered_dict, make_file, ensure_ascii=False, indent="\t")
     print("JSON writing completed")
     
@@ -78,3 +112,4 @@ with open(currPath, 'w', encoding="utf-8") as make_file:
 
 
 
+'''
